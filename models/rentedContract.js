@@ -3,6 +3,7 @@ const RentedContractSchema = new Mongoose.Schema({
     validFrom: {
         type: Date,
         required: true,
+        default: Date.now,
     },
     validTo: {
         type: Date,
@@ -12,7 +13,7 @@ const RentedContractSchema = new Mongoose.Schema({
         type: Number,
         required: true,
     },
-    
+
 });
 
 const RentedContract = Mongoose.model("RentedContract", RentedContractSchema);

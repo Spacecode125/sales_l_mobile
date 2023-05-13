@@ -57,7 +57,23 @@ exports.createContract = async (req, res) => {
 
 exports.getContracts = async (req, res) => {
   try {
-    const contracts = await Contract.find();
+    const contracts = await Contract.find()
+      .populate("RentedContract")
+      .populate({
+        path: "TradedContract",
+        populate: [
+          {
+            path: "tradeInOffer",
+            model: "Device",
+          },
+          {
+            path: "tradedDevice",
+            model: "Device",
+          },
+        ],
+      })
+      .populate("signedbyOwner")
+      .populate("signedbyPartner");
     res.json(contracts);
   } catch (err) {
     console.error(err.message);
@@ -80,7 +96,6 @@ exports.getContractByReference = async (req, res) => {
 };
 
 exports.deleteContract = async (req, res) => {
-  //delete the contract with the reference
   const reference = req.params.reference;
   try {
     const contract = await Contract.findOne({ reference });

@@ -6,12 +6,12 @@ const ContractSchema = new Mongoose.Schema({
     unique: true,
   },
   signedbyOwner: {
-    type: String,
-    required: true,
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   signedbyPartner: {
-    type: String,
-    required: true,
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   RentedContract: {
     type: Mongoose.Schema.Types.ObjectId,
