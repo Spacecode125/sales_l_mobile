@@ -19,7 +19,6 @@ server = app.listen(3000, function () {
   console.log("Server is listening on port 3000");
 });
 
-app.use(cookieParser());
 app.use("/api/user", require("./routes/authRoutes"));
 app.use(authRoutes);
 
