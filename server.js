@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const connectDB = require("./db/db");
 const cors = require("cors");
-const authRoutes = require("./routes/authRoutes");
 const { roleAuth } = require("./middleware/auth");
 
 app.use(
@@ -20,7 +19,10 @@ server = app.listen(3000, function () {
 });
 app.use("/api/uploads", express.static("uploads"));
 app.use("/api/user", require("./routes/authRoutes"));
-app.use(authRoutes);
+app.use("/api/contract", require("./routes/contractRoutes"));
+app.use("/api/rentedContract", require("./routes/rentedContractRoutes"));
+app.use("/api/tradedContract", require("./routes/tradedContractRoutes"));
+
 
 app.get("/adminRoute", roleAuth("admin"), (req, res) => {
   res.send("Authenticated Route for Admin");
