@@ -20,6 +20,7 @@ server = app.listen(3000, function () {
 });
 
 app.use("/api/user", require("./routes/authRoutes"));
+app.use("/api/device", require("./routes/deviceRoutes"));
 app.use(authRoutes);
 
 app.get("/adminRoute", roleAuth("admin"), (req, res) => {
