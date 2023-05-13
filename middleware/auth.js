@@ -8,10 +8,11 @@ exports.roleAuth = (expectedRoles) => {
       const token = authHeader && authHeader.split(" ")[1];
       if (token == null) return res.status(401).json({ message: "Not authorized" });
       jwt.verify(token, jwtSecret, (err, user) => {
+        console.log(user);
         if (err) return res.status(403).json({ message: "Not authorized" });
-  
-        if (!expectedRoles.includes(user.role)) {
-          return res.status(403).json({ message: "Not authorized" });
+        
+        if (!expectedRoles.includes(user.user.role)) {
+          return res.status(403).json({ message: "error" });
         }
   
         console.log(user);
