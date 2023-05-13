@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-
-const localDB = "mongodb+srv://khaledbouajila5481:khaled99@cluster0.ymwoyla.mongodb.net/";
+require("dotenv").config();
+const DATABASE_URL = process.env.DATABASE_URL;
+const localDB = DATABASE_URL;
 const connectDB = async () => {
   await mongoose.connect(localDB, {
     useNewUrlParser: true,
