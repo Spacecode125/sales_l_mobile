@@ -13,6 +13,7 @@ const DeviceSchema = new Mongoose.Schema({
   },
   serialNumber: {
     type: String,
+    unique: true,
     required: true,
   },
   image: {

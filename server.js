@@ -3,6 +3,7 @@ const app = express();
 const connectDB = require("./db/db");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
+const deviceRoutes = require("./routes/deviceRoutes");
 const { roleAuth } = require("./middleware/auth");
 
 app.use(
@@ -21,6 +22,7 @@ server = app.listen(3000, function () {
 app.use("/api/uploads", express.static("uploads"));
 app.use("/api/user", require("./routes/authRoutes"));
 app.use("/api/device", require("./routes/deviceRoutes"));
+app.use(deviceRoutes);
 app.use(authRoutes);
 
 app.get("/adminRoute", roleAuth("admin"), (req, res) => {

@@ -8,10 +8,10 @@ const {
   deleteDevice,
 } = require("../controllers/deviceController");
 
-router.route("/").post(roleAuth, addDevice);
+router.route("/").post(roleAuth(["admin","salesman"]), addDevice);
 router.route("/").get(getAllDevices);
 router.route("/:deviceId").get(getDeviceById);
-router.route("/update/:deviceId").post(roleAuth, updateDevice);
-router.route("/").delete(roleAuth, deleteDevice);
+router.route("/update/:deviceId").post(roleAuth(["admin","salesman"]), updateDevice);
+router.route("/:deviceId").delete(roleAuth(["admin","salesman"]), deleteDevice);
 
 module.exports = router;

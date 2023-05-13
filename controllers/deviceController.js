@@ -24,10 +24,13 @@ exports.addDevice = async (req, res, next) => {
       serialNumber,
       purchacePrice,
       yearOfManufacture,
-      createdAt,
     } = req.body;
     const image = req.file.path;
     try {
+      const serial_number = await Device.findOne({ serialNumber });
+      if (serial_number) {
+        return res.status(500).json({ message: "Duplicated serial number" });
+      }
       const device = await Device.create({
         description,
         type,
@@ -36,11 +39,8 @@ exports.addDevice = async (req, res, next) => {
         image,
         purchacePrice,
         yearOfManufacture,
-        createdAt,
       });
-      res.status(201).json(
-        device,
-      );
+      res.status(201).json(device);
     } catch (error) {
       res.status(400).json({
         message: "An error occured",
@@ -53,9 +53,7 @@ exports.addDevice = async (req, res, next) => {
 exports.getDeviceById = async (req, res, next) => {
   try {
     const device = await Device.findById(req.params.id);
-    res.status(200).json(
-      device,
-    );
+    res.status(200).json(device);
   } catch (error) {
     res.status(400).json({
       message: "No Device found",
@@ -66,10 +64,8 @@ exports.getDeviceById = async (req, res, next) => {
 
 exports.getAllDevices = async (req, res, next) => {
   try {
-    const devices = await Device.find({});
-    res.status(200).json({
-      devices,
-    });
+    const devices = await Device.find();
+    res.status(200).json(devices);
   } catch (error) {
     res.status(400).json({
       message: "No Devices found",
