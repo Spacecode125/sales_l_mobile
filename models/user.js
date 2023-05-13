@@ -29,6 +29,7 @@ const UserSchema = new Mongoose.Schema({
   image: {
     type: String,
     required: true,
+    default: "/uploads/info.png",
   },
   createdAt: {
     type: Date,

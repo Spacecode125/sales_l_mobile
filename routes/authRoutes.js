@@ -10,10 +10,10 @@ const {
 const  {roleAuth}  = require("../middleware/auth");
 
 router.post("/register", register);
-router.post("/login", roleAuth(["user", "salesman", "admin"]), login);
+router.post("/login", login);
 router.get("/", roleAuth(["admin"]), getUsers);
 router.get("/:userId", roleAuth(["admin"]), getUserById);
-router.put("/:userId", roleAuth(["admin"]), updateUser);
+router.put("/update", roleAuth(["admin","user","salesman"]), updateUser);
 router.delete("/:userId", roleAuth(["admin"]), deleteUser);
 
 

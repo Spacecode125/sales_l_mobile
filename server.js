@@ -18,7 +18,7 @@ connectDB();
 server = app.listen(3000, function () {
   console.log("Server is listening on port 3000");
 });
-
+app.use("/api/uploads", express.static("uploads"));
 app.use("/api/user", require("./routes/authRoutes"));
 app.use("/api/device", require("./routes/deviceRoutes"));
 app.use(authRoutes);
