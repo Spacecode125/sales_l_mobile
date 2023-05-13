@@ -22,6 +22,7 @@ app.use("/api/user", require("./routes/authRoutes"));
 app.use("/api/contract", require("./routes/contractRoutes"));
 app.use("/api/rentedContract", require("./routes/rentedContractRoutes"));
 app.use("/api/tradedContract", require("./routes/tradedContractRoutes"));
+app.use("/api/device", require("./routes/deviceRoutes"));
 
 
 app.get("/adminRoute", roleAuth("admin"), (req, res) => {
