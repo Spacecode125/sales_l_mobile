@@ -13,6 +13,16 @@ const RentedContractSchema = new Mongoose.Schema({
         type: Number,
         required: true,
     },
+    device : {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: "Device",
+        required: true,
+    },
+    user: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
 
 });
 

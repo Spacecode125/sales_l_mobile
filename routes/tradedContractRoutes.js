@@ -8,8 +8,8 @@ const {
 const { roleAuth } = require("../middleware/auth");
 
 router.post("/", roleAuth(["admin", "salesman"]), createTradedContract);
-router.get("/", roleAuth(["admin"]), getTradedContracts);
-router.get("/:tradedContractId", roleAuth(["admin"]), getTradedContractById);
-router.delete("/:tradedContractId", roleAuth(["admin"]), deleteTradedContract);
+router.get("/", getTradedContracts);
+router.get("/:tradedContractId", getTradedContractById);
+router.delete("/:tradedContractId", roleAuth(["admin","salesman"]), deleteTradedContract);
 
 module.exports = router;

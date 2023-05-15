@@ -10,6 +10,11 @@ const TradedContractSchema = new Mongoose.Schema({
     ref: "Device",
     required: true,
   },
+  user: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+},
 });
 
 const TradedContract = Mongoose.model("TradedContract", TradedContractSchema);
