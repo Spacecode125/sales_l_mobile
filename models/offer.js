@@ -1,12 +1,16 @@
 const Mongoose = require("mongoose");
 const OfferSchema = new Mongoose.Schema({
-  RentedOffers: {
+  RentedOffer: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "RentedContract",
   },
-  TradedOffers: {
+  TradedOffer: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "TradedContract",
+  },
+  salesman: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 

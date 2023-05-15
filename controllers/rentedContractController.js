@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(express.json());
 
 exports.createRentedContract = async (req, res) => {
-  const { userId } = req.user.user.id;
+  const  userId  = req.user.user.id;
   const { validFrom, validTo, price, device } = req.body;
   try {
     const deviceFound = await Device.findById(device);
@@ -23,7 +23,8 @@ exports.createRentedContract = async (req, res) => {
     });
     await newRentedContract.save();
     const newOffer = new Offer({
-      rentedContract: newRentedContract._id,
+      RentedOffer: newRentedContract._id,
+      salesman:deviceFound.user,
     });
     await newOffer.save();
     res.json(newRentedContract);
@@ -58,7 +59,7 @@ exports.getRentedContractById = async (req, res) => {
 };
 
 exports.deleteRentedContract = async (req, res) => {
-  const { userId } = req.user.user.id;
+  const  userId  = req.user.user.id;
   const rentedContractId = req.params.rentedContractId;
   try {
     const rentedContract = await RentedContract.findById(rentedContractId);

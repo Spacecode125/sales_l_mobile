@@ -1,19 +1,27 @@
 const TradedContract = require("../models/tradedContract");
+const Offer = require("../models/offer");
+const Device = require("../models/device");
 const express = require("express");
 const app = express();
 require("dotenv").config();
 app.use(express.json());
 
 exports.createTradedContract = async (req, res) => {
-  const { userId } = req.user.user.id;
+  const  userId  = req.user.user.id;
   const { tradeInOffer, tradedDevice } = req.body;
   try {
+    const deviceFound = await Device.findById(tradedDevice);
     const newTradedContract = new TradedContract({
       tradeInOffer,
       tradedDevice,
       user: userId,
     });
     await newTradedContract.save();
+    const newOffer = new Offer({
+        TradedOffer: newTradedContract._id,
+        salesman:deviceFound.user,
+      });
+      await newOffer.save();
     res.json(newTradedContract);
   } catch (err) {
     console.error(err.message);
@@ -46,7 +54,7 @@ exports.getTradedContractById = async (req, res) => {
 };
 
 exports.deleteTradedContract = async (req, res) => {
-  const { userId } = req.user.user.id;
+  const  userId  = req.user.user.id;
   const tradedContractId = req.params.tradedContractId;
   try {
     const tradedContract = await TradedContract.findById(tradedContractId);
