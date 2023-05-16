@@ -14,10 +14,18 @@ exports.createRentedContract = async (req, res) => {
     if (!deviceFound) {
       return res.status(404).json({ message: "Device not found" });
     }
+    // Calculate the number of days rented
+    const fromDate = new Date(validFrom);
+    const toDate = new Date(validTo);
+    const rentalDays = Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
+    console.log(rentalDays);
+
+    // Calculate the total price based on the rental days
+    const totalPrice = rentalDays * deviceFound.rentalPrice;
     const newRentedContract = new RentedContract({
       validFrom,
       validTo,
-      price,
+      total: totalPrice,
       device,
       user: userId,
     });

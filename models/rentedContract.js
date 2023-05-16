@@ -9,7 +9,7 @@ const RentedContractSchema = new Mongoose.Schema({
         type: Date,
         required: true,
     },
-    price: {
+    total: {
         type: Number,
         required: true,
     },
