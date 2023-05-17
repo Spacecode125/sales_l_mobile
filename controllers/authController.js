@@ -60,7 +60,9 @@ exports.register = async (req, res) => {
       });
     } catch (err) {
       console.log(err.message);
-      res.status(500).send("Server Error");
+      res.status(500).json({
+        message: "Server error",
+      });
     }
   });
 };
@@ -98,7 +100,9 @@ exports.login = async (req, res) => {
     );
   } catch (err) {
     console.log(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 };
 
@@ -108,7 +112,9 @@ exports.getUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     console.log(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      message: "users not found",
+    });
   }
 };
 
@@ -122,7 +128,9 @@ exports.getUserById = async (req, res) => {
     res.json(user);
   } catch (err) {
     console.log(err.message);
-    res.status(500).send("Server Error");
+    res.status(500).json({
+      message: "user not found",
+    });
   }
 };
 
@@ -135,7 +143,6 @@ exports.updateUser = async (req, res) => {
     
         const userId = req.user.user.id;
         const { email, firstName, lastName,phone, address } = req.body;
-        const image = req.file ? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file, or undefined if no file is uploaded
     
         try {
           let user = await User.findById(userId);
@@ -148,9 +155,11 @@ exports.updateUser = async (req, res) => {
           user.lastName = lastName;
           user.phone = phone;
           user.address = address;
-    
-          if (image) {
-            user.image = image;
+          if (req.file) {
+            if (user.image) {
+              fs.unlinkSync(user.image);
+            }
+            user.image = req.file.path;
           }
     
           await user.save();
@@ -175,7 +184,9 @@ exports.deleteUser = async (req, res) => {
         // Delete the user's image file from the server
         fs.unlink(user.image, (err) => {
           if (err) {
-            console.log(err);
+            res.status(500).json({
+              message: "Device image not found",
+            });
           }
         });
       }

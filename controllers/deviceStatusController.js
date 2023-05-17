@@ -1,4 +1,5 @@
 const DeviceStatus = require("../models/deviceStatus");
+const RentedContract = require("../models/rentedContract");
 const express = require("express");
 const app = express();
 const bcrypt = require("bcryptjs");
@@ -10,6 +11,7 @@ const multer = require("multer");
 const multerStorage = require("../middleware/multerStorage");
 const defaultImage = "uploads/info.png";
 const upload = multer({ storage: multerStorage });
+const fs = require("fs");
 
 exports.addDeviceStatus = async (req, res, next) => {
   const userId = req.user.user.id;
@@ -26,6 +28,11 @@ exports.addDeviceStatus = async (req, res, next) => {
       req.files.pictureBeforeRent?.[0]?.path || defaultImage;
     const pictureAfterRent =
       req.files.pictureAfterRent?.[0]?.path || defaultImage;
+    const RentedContractId = req.params.RentedContractId;
+    const RentFound = await RentedContract.findById(RentedContractId);
+    if (!RentFound) {
+      res.status(500).json({ message: "No Rent found" });
+    }
     try {
       const deviceStatus = await DeviceStatus.create({
         descriptionBeforeRent,
@@ -33,6 +40,7 @@ exports.addDeviceStatus = async (req, res, next) => {
         pictureBeforeRent,
         pictureAfterRent,
         user: userId,
+        RentedContract: RentedContractId,
       });
       res.status(201).json(deviceStatus);
     } catch (error) {
@@ -44,20 +52,29 @@ exports.addDeviceStatus = async (req, res, next) => {
   });
 };
 
-exports.getAllDevicesStausBySalesman = async (req, res, next) => {
+exports.getAllDevicesStatusBySalesman = async (req, res, next) => {
   const userId = req.user.user.id;
-  const deviceTest = await DeviceStatus.findById(deviceStatusId);
-    if (deviceTest.user != userId || req.user.user.role != "admin") {
+  try {
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+
+    const deviceStatus = await DeviceStatus.find(query);
+    if (deviceStatus) {
+      res.status(200).json(deviceStatus);
+    } else {
       res
         .status(500)
-        .json({ message: "Not authorized to update this device status" });
+        .json({ message: "Not authorized to get this device status" });
     }
-    if (!deviceTest) {
-      res.status(500).json({ message: "No device status found" });
-    }
-  try {
-    const deviceStatus = await DeviceStatus.find({ user: userId });;
-    res.status(200).json(deviceStatus);
   } catch (error) {
     res.status(400).json({
       message: "No Device status found",
@@ -67,8 +84,9 @@ exports.getAllDevicesStausBySalesman = async (req, res, next) => {
 };
 
 exports.getDeviceStatusById = async (req, res, next) => {
+  const { deviceStatusId } = req.params;
   try {
-    const deviceStatus = await DeviceStatus.findById(req.params.id);
+    const deviceStatus = await DeviceStatus.findById(deviceStatusId);
     res.status(200).json(deviceStatus);
   } catch (error) {
     res.status(400).json({
@@ -95,14 +113,25 @@ exports.updateDeviceStatus = async (req, res, next) => {
     const pictureAfterRent =
       req.files.pictureAfterRent?.[0]?.path || defaultImage;
     const deviceTest = await DeviceStatus.findById(deviceStatusId);
-    if (deviceTest.user != userId || req.user.user.role != "admin") {
-      res
-        .status(500)
-        .json({ message: "Not authorized to update this device status" });
-    }
     if (!deviceTest) {
       res.status(500).json({ message: "No device status found" });
     }
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+    const deviceStatusAuth = await DeviceStatus.find(query);
+    if (!deviceStatusAuth) { 
+      res.status(500).json({ message: "Not authorized to update this device Status" });
+    }
+    
     if (req.file) {
       if (deviceTest.image) {
         fs.unlinkSync(deviceTest.image);
@@ -136,10 +165,20 @@ exports.deleteDeviceStatus = async (req, res, next) => {
     const { deviceStatusId } = req.params;
     const userId = req.user.user.id;
     let deviceStatus = await DeviceStatus.findById(deviceStatusId);
-    if (deviceStatus.user != userId || req.user.user.role != "admin") {
-      res
-        .status(500)
-        .json({ message: "Not authorized to delete this device status" });
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+    const deviceStatusAuth = await DeviceStatus.find(query);
+    if (!deviceStatusAuth) { 
+      res.status(500).json({ message: "Not authorized to delete this device Status" });
     }
     if (deviceStatus.image && deviceStatus.image !== "/uploads/info.png") {
       fs.unlink(deviceStatus.image, (err) => {

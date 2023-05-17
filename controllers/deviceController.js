@@ -10,6 +10,7 @@ const multer = require("multer");
 const multerStorage = require("../middleware/multerStorage");
 const defaultImage = "uploads/info.png";
 const upload = multer({ storage: multerStorage });
+const fs = require("fs");
 
 exports.addDevice = async (req, res, next) => {
   const userId = req.user.user.id;
@@ -90,12 +91,23 @@ exports.updateDevice = async (req, res, next) => {
       description,
       brand,
       type,
-      serialNumber,
       purchacePrice,
       yearOfManufacture,
     } = req.body;
     const deviceTest = await Device.findById(deviceId);
-    if (deviceTest.user != userId || req.user.user.role != "admin") {
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+    const deviceAuth = await Device.find(query);
+    if (!deviceAuth) { 
       res.status(500).json({ message: "Not authorized to update this device" });
     }
     if (!deviceTest) {
@@ -112,12 +124,11 @@ exports.updateDevice = async (req, res, next) => {
         description,
         brand,
         type,
-        serialNumber,
         image: deviceTest.image,
         purchacePrice,
         yearOfManufacture,
       });
-      res.status(200).json({ device, message: "devices successfully updated" });
+      res.status(200).json({ message: "devices successfully updated" });
     } catch (error) {
       res.status(400).json({
         message: "No device found",
@@ -132,7 +143,19 @@ exports.deleteDevice = async (req, res, next) => {
     const { deviceId } = req.params;
     const userId = req.user.user.id;
     let device = await Device.findById(deviceId);
-    if (device.user != userId || req.user.user.role != "admin") {
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+    const deviceAuth = await Device.find(query);
+    if (!deviceAuth) {
       res.status(500).json({ message: "Not authorized to delete this device" });
     }
     if (device.image && device.image !== "/uploads/info.png") {
