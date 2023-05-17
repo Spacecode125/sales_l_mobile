@@ -1,6 +1,7 @@
 const Contract = require("../models/contract");
 const RentedContractModel = require("../models/rentedContract");
 const TradedContractModel = require("../models/tradedContract");
+const PurchaseContractModel = require("../models/purchaseContract");
 
 const express = require("express");
 const app = express();
@@ -8,12 +9,13 @@ require("dotenv").config();
 app.use(express.json());
 
 exports.createContract = async (req, res) => {
+  const userId = req.user.user.id;
   const {
     reference,
-    signedbyOwner,
     signedbyPartner,
     rentedContractId,
     tradedContractId,
+    purchaseContractId,
   } = req.body;
   try {
     let newContract;
@@ -26,7 +28,7 @@ exports.createContract = async (req, res) => {
       }
       newContract = new Contract({
         reference,
-        signedbyOwner,
+        signedbyOwner:userId,
         signedbyPartner,
         RentedContract: rentedContractId,
       });
@@ -39,9 +41,22 @@ exports.createContract = async (req, res) => {
       }
       newContract = new Contract({
         reference,
-        signedbyOwner,
+        signedbyOwner:userId,
         signedbyPartner,
         TradedContract: tradedContractId,
+      });
+    } else if (purchaseContractId) {
+      const purchaseContract = await PurchaseContractModel.findById(
+        purchaseContractId
+      );
+      if (!purchaseContract) {
+        return res.status(400).json({ message: "Invalid traded contract ID" });
+      }
+      newContract = new Contract({
+        reference,
+        signedbyOwner:userId,
+        signedbyPartner,
+        PurchaseContract: purchaseContractId,
       });
     } else {
       return res.status(400).json({ message: "No contract ID provided" });
@@ -58,7 +73,13 @@ exports.createContract = async (req, res) => {
 exports.getContracts = async (req, res) => {
   try {
     const contracts = await Contract.find()
-      .populate("RentedContract")
+      .populate({
+        path: "RentedContract",
+        populate: {
+          path: "device",
+          model: "Device",
+        },
+      })
       .populate({
         path: "TradedContract",
         populate: [
@@ -71,6 +92,13 @@ exports.getContracts = async (req, res) => {
             model: "Device",
           },
         ],
+      })
+      .populate({
+        path: "PurchaseContract",
+        populate: {
+          path: "device",
+          model: "Device",
+        },
       })
       .populate("signedbyOwner")
       .populate("signedbyPartner");
@@ -92,6 +120,57 @@ exports.getContractByReference = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.getAllContractsBySalesman = async (req, res, next) => {
+  const userId = req.user.user.id;
+  try {
+    const userRole = req.user.user.role;
+    let query = {};
+
+    if (userRole !== "admin") {
+      query = {
+        $or: [{ signedbyOwner: userId }, { "user.role": "admin" }],
+      };
+    }
+
+    const contracts = await Contract.find(query)
+      .populate("signedbyOwner")
+      .populate("signedbyPartner")
+      .populate({
+        path: "RentedContract",
+        populate: {
+          path: "device",
+          model: "Device",
+        },
+      })
+      .populate({
+        path: "TradedContract",
+        populate: {
+          path: "tradedDevice",
+          model: "Device",
+        },
+      })
+      .populate({
+        path: "PurchaseContract",
+        populate: {
+          path: "device",
+          model: "Device",
+        },
+      });
+    if (contracts) {
+      res.status(200).json(contracts);
+    } else {
+      res
+        .status(500)
+        .json({ message: "Not authorized to get these contracts" });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "No contracts found",
+      error: error.message,
+    });
   }
 };
 

@@ -59,7 +59,7 @@ exports.getAllPurchaseContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const purchaseContracts = await PurchaseContract.find(query);
+    const purchaseContracts = await PurchaseContract.find(query).populate("device").populate("client").populate("owner");
     if (purchaseContracts) {
       res.status(200).json(purchaseContracts);
     } else {

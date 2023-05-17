@@ -28,6 +28,23 @@ exports.getAllOffers = async (req, res) => {
             model: "Device",
           },
         ],
+      })
+      .populate({
+        path: "PurchaseOffer",
+        populate: [
+          {
+            path: "device",
+            model: "Device",
+          },
+          {
+            path: "owner",
+            model: "User",
+          },
+          {
+            path: "client",
+            model: "User",
+          },
+        ],
       });
     res.json(offer);
   } catch (err) {

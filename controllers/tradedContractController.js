@@ -68,7 +68,7 @@ exports.getAllTradedContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const tradedContracts = await TradedContract.find(query);
+    const tradedContracts = await TradedContract.find(query).populate("device").populate("client").populate("owner");
     if (tradedContracts) {
       res.status(200).json(tradedContracts);
     } else {

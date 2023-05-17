@@ -81,7 +81,7 @@ exports.getAllRentedContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const rentedContracts = await RentedContract.find(query);
+    const rentedContracts = await RentedContract.find(query).populate("device").populate("client").populate("owner");
     if (rentedContracts) {
       res.status(200).json(rentedContracts);
     } else {

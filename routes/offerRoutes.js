@@ -5,7 +5,7 @@ const {
   getAllOffersBySalesman,
 } = require("../controllers/offerController");
 
-router.route("/").get(getAllOffers);
+router.route("/").get(roleAuth(["admin"]),getAllOffers);
 router.route("/salesman").get(roleAuth(["admin","salesman"]),getAllOffersBySalesman);
 
 module.exports = router;

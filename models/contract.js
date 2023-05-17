@@ -21,6 +21,10 @@ const ContractSchema = new Mongoose.Schema({
     type: Mongoose.Schema.Types.ObjectId,
     ref: "TradedContract",
   },
+  PurchaseContract: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "PurchaseContract",
+  },
 });
 
 const Contract = Mongoose.model("Contract", ContractSchema);
