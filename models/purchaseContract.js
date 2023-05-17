@@ -1,13 +1,12 @@
 const Mongoose = require("mongoose");
-const TradedContractSchema = new Mongoose.Schema({
-  tradeInOffer: {
+const PurchaseContractSchema = new Mongoose.Schema({
+  device: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "Device",
     required: true,
   },
-  tradedDevice: {
-    type: Mongoose.Schema.Types.ObjectId,
-    ref: "Device",
+  price: {
+    type: Number,
     required: true,
   },
   owner: {
@@ -22,5 +21,8 @@ const TradedContractSchema = new Mongoose.Schema({
   },
 });
 
-const TradedContract = Mongoose.model("TradedContract", TradedContractSchema);
-module.exports = TradedContract;
+const PurchaseContract = Mongoose.model(
+  "PurchaseContract",
+  PurchaseContractSchema
+);
+module.exports = PurchaseContract;

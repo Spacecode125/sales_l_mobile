@@ -20,7 +20,7 @@ exports.createRentedContract = async (req, res) => {
     const toDate = new Date(validTo);
     const rentalDays = Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
     console.log(rentalDays);
-
+    const owner = deviceFound.user;
     // Calculate the total price based on the rental days
     const totalPrice = rentalDays * deviceFound.rentalPrice;
     const newRentedContract = new RentedContract({
@@ -28,12 +28,14 @@ exports.createRentedContract = async (req, res) => {
       validTo,
       total: totalPrice,
       device:deviceId,
-      user: userId,
+      client: userId,
+      owner
     });
     await newRentedContract.save();
     const newOffer = new Offer({
       RentedOffer: newRentedContract._id,
       salesman:deviceFound.user,
+      client:userId
     });
     await newOffer.save();
     res.json(newRentedContract);
@@ -67,6 +69,34 @@ exports.getRentedContractById = async (req, res) => {
   }
 };
 
+exports.getAllRentedContractsBySalesman = async (req, res, next) => {
+  const userId = req.user.user.id;
+  try {
+    const userRole = req.user.user.role;
+    let query = {};
+
+    if (userRole !== "admin") {
+      query = {
+        $or: [{ owner: userId }, { "user.role": "admin" }],
+      };
+    }
+
+    const rentedContracts = await RentedContract.find(query);
+    if (rentedContracts) {
+      res.status(200).json(rentedContracts);
+    } else {
+      res
+        .status(500)
+        .json({ message: "Not authorized to get these rented contracts" });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "No rented contracts status found",
+      error: error.message,
+    });
+  }
+};
+
 exports.deleteRentedContract = async (req, res) => {
   const  userId  = req.user.user.id;
   const rentedContractId = req.params.rentedContractId;
@@ -81,7 +111,7 @@ exports.deleteRentedContract = async (req, res) => {
     if (userRole !== "admin") {
       query = {
         $or: [
-          { user: userId },
+          { owner: userId },
           { "user.role": "admin" }
         ]
       };

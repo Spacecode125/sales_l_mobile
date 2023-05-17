@@ -11,7 +11,7 @@ exports.roleAuth = (expectedRoles) => {
         if (err) return res.status(403).json({ message: "Not authorized" });
         
         if (!expectedRoles.includes(user.user.role)) {
-          return res.status(403).json({ message: "error" });
+          return res.status(403).json({ message: "Not authorized" });
         }
   
         console.log(user);

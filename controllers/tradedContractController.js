@@ -11,15 +11,18 @@ exports.createTradedContract = async (req, res) => {
   const { tradeInOffer, tradedDevice } = req.body;
   try {
     const deviceFound = await Device.findById(tradedDevice);
+    const owner = deviceFound.user;
     const newTradedContract = new TradedContract({
       tradeInOffer,
       tradedDevice,
-      user: userId,
+      client: userId,
+      owner
     });
     await newTradedContract.save();
     const newOffer = new Offer({
         TradedOffer: newTradedContract._id,
         salesman:deviceFound.user,
+        client:userId
       });
       await newOffer.save();
     res.json(newTradedContract);
@@ -53,6 +56,34 @@ exports.getTradedContractById = async (req, res) => {
   }
 };
 
+exports.getAllTradedContractsBySalesman = async (req, res, next) => {
+  const userId = req.user.user.id;
+  try {
+    const userRole = req.user.user.role;
+    let query = {};
+
+    if (userRole !== "admin") {
+      query = {
+        $or: [{ owner: userId }, { "user.role": "admin" }],
+      };
+    }
+
+    const tradedContracts = await TradedContract.find(query);
+    if (tradedContracts) {
+      res.status(200).json(tradedContracts);
+    } else {
+      res
+        .status(500)
+        .json({ message: "Not authorized to get these traded contracts" });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "No traded contracts status found",
+      error: error.message,
+    });
+  }
+};
+
 exports.deleteTradedContract = async (req, res) => {
   const  userId  = req.user.user.id;
   const tradedContractId = req.params.tradedContractId;
@@ -67,7 +98,7 @@ exports.deleteTradedContract = async (req, res) => {
     if (userRole !== "admin") {
       query = {
         $or: [
-          { user: userId },
+          { owner: userId },
           { "user.role": "admin" }
         ]
       };
