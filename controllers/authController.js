@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
       return res.status(500).send("Server Error");
     }
 
-    const { email, role, firstName, lastName, address, password } = req.body;
+    const { email, role, firstName, lastName,phone, address, password } = req.body;
     const image = req.file? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file
     const allowedRoles = ["user", "salesman"];
     if (!allowedRoles.includes(role)) {
@@ -36,6 +36,7 @@ exports.register = async (req, res) => {
         role,
         firstName,
         lastName,
+        phone,
         address,
         password,
         image,
@@ -133,7 +134,7 @@ exports.updateUser = async (req, res) => {
         }
     
         const userId = req.user.user.id;
-        const { email, firstName, lastName, address } = req.body;
+        const { email, firstName, lastName,phone, address } = req.body;
         const image = req.file ? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file, or undefined if no file is uploaded
     
         try {
@@ -145,6 +146,7 @@ exports.updateUser = async (req, res) => {
           user.email = email;
           user.firstName = firstName;
           user.lastName = lastName;
+          user.phone = phone;
           user.address = address;
     
           if (image) {

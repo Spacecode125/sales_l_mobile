@@ -1,9 +1,5 @@
 const Mongoose = require("mongoose");
 const DeviceStatusSchema = new Mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   descriptionBeforeRent: {
     type: String,
     required: true,
@@ -19,6 +15,10 @@ const DeviceStatusSchema = new Mongoose.Schema({
   pictureAfterRent: {
     type: String,
     required: true,
+  },
+  user: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   createdAt: {
     type: Date,

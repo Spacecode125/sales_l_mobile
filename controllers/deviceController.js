@@ -12,7 +12,7 @@ const defaultImage = "uploads/info.png";
 const upload = multer({ storage: multerStorage });
 
 exports.addDevice = async (req, res, next) => {
-  const { userId } = req.user.user.id;
+  const userId = req.user.user.id;
   upload.single("image")(req, res, async (err) => {
     if (err) {
       console.log(err);
@@ -78,7 +78,7 @@ exports.getAllDevices = async (req, res, next) => {
 
 exports.updateDevice = async (req, res, next) => {
   const { deviceId } = req.params;
-  const { userId } = req.user.user.id;
+  const userId = req.user.user.id;
   upload.single("image")(req, res, async (err) => {
     if (err) {
       console.log(err);
@@ -111,7 +111,7 @@ exports.updateDevice = async (req, res, next) => {
         brand,
         type,
         serialNumber,
-        image: deviveTest.image,
+        image: deviceTest.image,
         purchacePrice,
         yearOfManufacture,
       });
@@ -128,7 +128,7 @@ exports.updateDevice = async (req, res, next) => {
 exports.deleteDevice = async (req, res, next) => {
   try {
     const { deviceId } = req.params;
-    const { userId } = req.user.user.id;
+    const userId = req.user.user.id;
     let device = await Device.findById(deviceId);
     if (device.user != userId || req.user.user.role != "admin") {
       res.status(500).json({ message: "Not authorized to delete this device" });
