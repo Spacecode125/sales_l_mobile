@@ -7,7 +7,7 @@ const {
 } = require("../controllers/rentedContractController");
 const { roleAuth } = require("../middleware/auth");
 
-router.post("/", roleAuth(["admin", "salesman"]), createRentedContract);
+router.post("/:deviceId", roleAuth(["admin", "salesman"]), createRentedContract);
 router.get("/", getRentedContracts);
 router.get("/:rentedContractId", getRentedContractById);
 router.delete("/:rentedContractId", roleAuth(["admin","salesman"]), deleteRentedContract);

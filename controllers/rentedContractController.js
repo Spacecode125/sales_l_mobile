@@ -8,9 +8,10 @@ app.use(express.json());
 
 exports.createRentedContract = async (req, res) => {
   const  userId  = req.user.user.id;
-  const { validFrom, validTo, price, device } = req.body;
+  const { validFrom, validTo } = req.body;
+  const { deviceId } = req.params;
   try {
-    const deviceFound = await Device.findById(device);
+    const deviceFound = await Device.findById(deviceId);
     if (!deviceFound) {
       return res.status(404).json({ message: "Device not found" });
     }
@@ -26,7 +27,7 @@ exports.createRentedContract = async (req, res) => {
       validFrom,
       validTo,
       total: totalPrice,
-      device,
+      device:deviceId,
       user: userId,
     });
     await newRentedContract.save();

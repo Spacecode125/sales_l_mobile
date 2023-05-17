@@ -108,10 +108,6 @@ exports.updateDeviceStatus = async (req, res, next) => {
       return res.status(500).json({ message: "Server error" });
     }
     const { descriptionBeforeRent, descriptionAfterRent } = req.body;
-    const pictureBeforeRent =
-      req.files.pictureBeforeRent?.[0]?.path || defaultImage;
-    const pictureAfterRent =
-      req.files.pictureAfterRent?.[0]?.path || defaultImage;
     const deviceTest = await DeviceStatus.findById(deviceStatusId);
     if (!deviceTest) {
       res.status(500).json({ message: "No device status found" });
@@ -132,11 +128,17 @@ exports.updateDeviceStatus = async (req, res, next) => {
       res.status(500).json({ message: "Not authorized to update this device Status" });
     }
     
-    if (req.file) {
-      if (deviceTest.image) {
-        fs.unlinkSync(deviceTest.image);
+    if (req.files.pictureBeforeRent?.[0]?.path) {
+      if (deviceTest.pictureBeforeRent) {
+        fs.unlinkSync(deviceTest.pictureBeforeRent);
       }
-      deviceTest.image = req.file.path;
+      deviceTest.pictureBeforeRent = req.files.pictureBeforeRent?.[0]?.path;
+    }
+    if (req.files.pictureAfterRent?.[0]?.path) {
+      if (deviceTest.pictureAfterRent) {
+        fs.unlinkSync(deviceTest.pictureAfterRent);
+      }
+      deviceTest.pictureAfterRent = req.files.pictureBeforeRent?.[0]?.path;
     }
     try {
       const deviceStatus = await DeviceStatus.findByIdAndUpdate(
@@ -144,8 +146,8 @@ exports.updateDeviceStatus = async (req, res, next) => {
         {
           descriptionBeforeRent,
           descriptionAfterRent,
-          pictureBeforeRent: pictureBeforeRent,
-          pictureAfterRent: pictureAfterRent,
+          pictureBeforeRent: deviceTest.pictureBeforeRent,
+          pictureAfterRent: deviceTest.pictureAfterRent,
         }
       );
       res
