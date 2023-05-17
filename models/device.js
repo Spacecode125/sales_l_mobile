@@ -24,6 +24,10 @@ const DeviceSchema = new Mongoose.Schema({
     type: Number,
     required: true,
   },
+  rentalPrice: {
+    type: Number,
+    required: true,
+  },
   yearOfManufacture: {
     type: Date,
     required: true,

@@ -25,6 +25,7 @@ exports.addDevice = async (req, res, next) => {
       serialNumber,
       purchacePrice,
       yearOfManufacture,
+      rentalPrice,
     } = req.body;
     const image = req.file ? req.file.path : defaultImage;
     try {
@@ -41,6 +42,7 @@ exports.addDevice = async (req, res, next) => {
         purchacePrice,
         yearOfManufacture,
         user: userId,
+        rentalPrice,
       });
       res.status(201).json(device);
     } catch (error) {
