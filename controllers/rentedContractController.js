@@ -74,7 +74,19 @@ exports.deleteRentedContract = async (req, res) => {
     if (!rentedContract) {
       return res.status(404).json({ message: "RentedContract not found" });
     }
-    if (rentedContract.user != userId || req.user.user.role != "admin") {
+    const userRole = req.user.user.role;
+    let query = {};
+  
+    if (userRole !== "admin") {
+      query = {
+        $or: [
+          { user: userId },
+          { "user.role": "admin" }
+        ]
+      };
+    }
+    const RentedContractAuth = await RentedContract.find(query);
+    if (!RentedContractAuth) {
       res.status(500).json({ message: "Not authorized to delete this rent" });
     }
     await rentedContract.remove();

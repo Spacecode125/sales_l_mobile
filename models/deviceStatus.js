@@ -20,6 +20,10 @@ const DeviceStatusSchema = new Mongoose.Schema({
     type: Mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  RentedContract: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "RentedContract",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
