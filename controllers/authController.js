@@ -150,7 +150,7 @@ exports.updateUser = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
           }
     
-          user.email = email;
+          user.email=req.user.user.email;
           user.firstName = firstName;
           user.lastName = lastName;
           user.phone = phone;

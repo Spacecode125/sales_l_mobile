@@ -56,8 +56,9 @@ exports.addDevice = async (req, res, next) => {
 };
 
 exports.getDeviceById = async (req, res, next) => {
+  const { deviceId } = req.params;
   try {
-    const device = await Device.findById(req.params.id);
+    const device = await Device.findById(deviceId);
     res.status(200).json(device);
   } catch (error) {
     res.status(400).json({
