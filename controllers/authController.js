@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
       return res.status(500).send("Server Error");
     }
 
-    const { email, role, firstName, lastName,phone, address, password } = req.body;
+    const { email, role, firstName, lastName,phone, address,about, password } = req.body;
     const image = req.file? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file
     const allowedRoles = ["user", "salesman"];
     if (!allowedRoles.includes(role)) {
@@ -39,6 +39,7 @@ exports.register = async (req, res) => {
         phone,
         address,
         password,
+        about,
         image,
       });
 
@@ -142,19 +143,20 @@ exports.updateUser = async (req, res) => {
         }
     
         const userId = req.user.user.id;
-        const { email, firstName, lastName,phone, address } = req.body;
+        const { about, firstName, lastName,phone, address } = req.body;
     
         try {
           let user = await User.findById(userId);
           if (!user) {
             return res.status(404).json({ message: "User not found" });
           }
-    
-          user.email=req.user.user.email;
+
           user.firstName = firstName;
           user.lastName = lastName;
           user.phone = phone;
           user.address = address;
+          user.about = about;
+          
           if (req.file) {
             if (user.image) {
               fs.unlinkSync(user.image);
