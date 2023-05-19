@@ -32,10 +32,6 @@ const DeviceSchema = new Mongoose.Schema({
     type: Date,
     required: true,
   },
-  deviceStatus: {
-    type: Mongoose.Schema.Types.ObjectId,
-    ref: "DeviceStatus",
-  },
   user: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "User",
