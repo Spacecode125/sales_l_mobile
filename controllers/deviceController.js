@@ -8,7 +8,6 @@ const jwtSecret = process.env.JWT_SECRET;
 app.use(express.json());
 const multer = require("multer");
 const multerStorage = require("../middleware/multerStorage");
-const defaultImage = "uploads/info.png";
 const upload = multer({ storage: multerStorage });
 const fs = require("fs");
 
@@ -28,7 +27,7 @@ exports.addDevice = async (req, res, next) => {
       yearOfManufacture,
       rentalPrice,
     } = req.body;
-    const image = req.file ? req.file.path : defaultImage;
+    const image = req.file.path ;
     try {
       const serial_number = await Device.findOne({ serialNumber });
       if (serial_number) {
@@ -159,7 +158,7 @@ exports.deleteDevice = async (req, res, next) => {
     if (!deviceAuth) {
       res.status(500).json({ message: "Not authorized to delete this device" });
     }
-    if (device.image && device.image !== "/uploads/info.png") {
+    if (device.image) {
       fs.unlink(device.image, (err) => {
         if (err) {
           res.status(500).json({

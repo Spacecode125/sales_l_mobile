@@ -9,7 +9,7 @@ app.use(express.json());
 const multer = require("multer");
 const multerStorage = require("../middleware/multerStorage");
 const fs = require("fs");
-const defaultImage = "uploads/info.png";
+const defaultImage = "uploads\\info.png";
 
 const upload = multer({ storage: multerStorage });
 exports.register = async (req, res) => {
@@ -19,8 +19,17 @@ exports.register = async (req, res) => {
       return res.status(500).send("Server Error");
     }
 
-    const { email, role, firstName, lastName,phone, address,about, password } = req.body;
-    const image = req.file? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file
+    const {
+      email,
+      role,
+      firstName,
+      lastName,
+      phone,
+      address,
+      about,
+      password,
+    } = req.body;
+    const image = req.file ? req.file.path : defaultImage; // Access the full path of the uploaded file from req.file
     const allowedRoles = ["user", "salesman"];
     if (!allowedRoles.includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
@@ -96,7 +105,7 @@ exports.login = async (req, res) => {
       (err, token) => {
         if (err) throw err;
         res.cookie("jwt", token, { httpOnly: true, maxAge: 360000 });
-        res.json({ token ,user});
+        res.json({ token, user });
       }
     );
   } catch (err) {
@@ -136,40 +145,42 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-    upload.single("image")(req, res, async (err) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send("Server Error");
+  upload.single("image")(req, res, async (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send("Server Error");
+    }
+
+    const userId = req.user.user.id;
+    const { about, firstName, lastName, phone, address } = req.body;
+
+    try {
+      let user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      user.firstName = firstName;
+      user.lastName = lastName;
+      user.phone = phone;
+      user.address = address;
+      user.about = about;
+
+      if (req.file) {
+        console.log(user.image);
+        if (user.image !== "uploads\\info.png") {
+          fs.unlinkSync(user.image);
         }
-    
-        const userId = req.user.user.id;
-        const { about, firstName, lastName,phone, address } = req.body;
-    
-        try {
-          let user = await User.findById(userId);
-          if (!user) {
-            return res.status(404).json({ message: "User not found" });
-          }
-          user.firstName = firstName;
-          user.lastName = lastName;
-          user.phone = phone;
-          user.address = address;
-          user.about = about;
-          if (req.file) {
-            if (user.image) {
-              fs.unlinkSync(user.image);
-            }
-            user.image = req.file.path;
-          }
-    
-          await user.save();
-          res.json(user);
-        } catch (err) {
-          console.log(err.message);
-          res.status(500).send("Server Error");
-        }
-      });
-    };
+        user.image = req.file.path;
+      }
+
+      await user.save();
+      res.json(user);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send("Server Error");
+    }
+  });
+};
 
 // Delete user
 exports.deleteUser = async (req, res) => {
@@ -179,8 +190,9 @@ exports.deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    if (user.image && user.image !== "/uploads/info.png") {
+    console.log(user.image)
+    if (user.image) {
+      if (user.image !== "uploads\\info.png") {
         // Delete the user's image file from the server
         fs.unlink(user.image, (err) => {
           if (err) {
@@ -190,8 +202,8 @@ exports.deleteUser = async (req, res) => {
           }
         });
       }
-  
-      await User.findByIdAndDelete(userId);
+    }
+    await User.findByIdAndDelete(userId);
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     console.log(err.message);

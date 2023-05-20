@@ -9,7 +9,6 @@ const jwtSecret = process.env.JWT_SECRET;
 app.use(express.json());
 const multer = require("multer");
 const multerStorage = require("../middleware/multerStorage");
-const defaultImage = "uploads/info.png";
 const upload = multer({ storage: multerStorage });
 const fs = require("fs");
 
@@ -25,9 +24,9 @@ exports.addDeviceStatus = async (req, res, next) => {
     }
     const { descriptionBeforeRent, descriptionAfterRent } = req.body;
     const pictureBeforeRent =
-      req.files.pictureBeforeRent?.[0]?.path || defaultImage;
+      req.files.pictureBeforeRent?.[0]?.path ;
     const pictureAfterRent =
-      req.files.pictureAfterRent?.[0]?.path || defaultImage;
+      req.files.pictureAfterRent?.[0]?.path ;
     const RentedContractId = req.params.RentedContractId;
     const RentFound = await RentedContract.findById(RentedContractId);
     if (!RentFound) {
@@ -182,7 +181,7 @@ exports.deleteDeviceStatus = async (req, res, next) => {
     if (!deviceStatusAuth) { 
       res.status(500).json({ message: "Not authorized to delete this device Status" });
     }
-    if (deviceStatus.image && deviceStatus.image !== "/uploads/info.png") {
+    if (deviceStatus.image) {
       fs.unlink(deviceStatus.image, (err) => {
         if (err) {
           res.status(500).json({
