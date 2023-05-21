@@ -27,7 +27,7 @@ exports.addDevice = async (req, res, next) => {
       yearOfManufacture,
       rentalPrice,
     } = req.body;
-    const image = req.file.path ;
+    const image = req.file.path;
     try {
       const serial_number = await Device.findOne({ serialNumber });
       if (serial_number) {
@@ -86,9 +86,7 @@ exports.getAllRentedDevicesBySalesman = async (req, res, next) => {
     if (devices) {
       res.status(200).json(devices);
     } else {
-      res
-        .status(500)
-        .json({ message: "Not authorized to get these devices" });
+      res.status(500).json({ message: "Not authorized to get these devices" });
     }
   } catch (error) {
     res.status(400).json({
@@ -106,27 +104,19 @@ exports.updateDevice = async (req, res, next) => {
       console.log(err);
       return res.status(500).json({ message: "Server error" });
     }
-    const {
-      description,
-      brand,
-      type,
-      purchacePrice,
-      yearOfManufacture,
-    } = req.body;
+    const { description, brand, type, purchacePrice, yearOfManufacture } =
+      req.body;
     const deviceTest = await Device.findById(deviceId);
     const userRole = req.user.user.role;
     let query = {};
-  
+
     if (userRole !== "admin") {
       query = {
-        $or: [
-          { user: userId },
-          { "user.role": "admin" }
-        ]
+        $or: [{ user: userId }, { "user.role": "admin" }],
       };
     }
     const deviceAuth = await Device.find(query);
-    if (!deviceAuth) { 
+    if (!deviceAuth) {
       res.status(500).json({ message: "Not authorized to update this device" });
     }
     if (!deviceTest) {
@@ -158,19 +148,16 @@ exports.updateDevice = async (req, res, next) => {
 };
 
 exports.deleteDevice = async (req, res, next) => {
+  const { deviceId } = req.params;
+  const userId = req.user.user.id;
   try {
-    const { deviceId } = req.params;
-    const userId = req.user.user.id;
     let device = await Device.findById(deviceId);
     const userRole = req.user.user.role;
     let query = {};
-  
+
     if (userRole !== "admin") {
       query = {
-        $or: [
-          { user: userId },
-          { "user.role": "admin" }
-        ]
+        $or: [{ user: userId }, { "user.role": "admin" }],
       };
     }
     const deviceAuth = await Device.find(query);

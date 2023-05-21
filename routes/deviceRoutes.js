@@ -11,7 +11,7 @@ const {
 
 router.route("/").post(roleAuth(["admin","salesman"]), addDevice);
 router.route("/").get(getAllDevices);
-router.route("/salesman").get(getAllRentedDevicesBySalesman);
+router.route("/salesman").get(roleAuth(["salesman"]),getAllRentedDevicesBySalesman);
 router.route("/:deviceId").get(getDeviceById);
 router.route("/update/:deviceId").put(roleAuth(["admin","salesman"]), updateDevice);
 router.route("/:deviceId").delete(roleAuth(["admin","salesman"]), deleteDevice);
