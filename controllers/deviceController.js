@@ -79,6 +79,25 @@ exports.getAllDevices = async (req, res, next) => {
   }
 };
 
+exports.getAllRentedDevicesBySalesman = async (req, res, next) => {
+  const userId = req.user.user.id;
+  try {
+    const devices = await Device.find({ user: userId });
+    if (devices) {
+      res.status(200).json(devices);
+    } else {
+      res
+        .status(500)
+        .json({ message: "Not authorized to get these devices" });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "No devices found",
+      error: error.message,
+    });
+  }
+};
+
 exports.updateDevice = async (req, res, next) => {
   const { deviceId } = req.params;
   const userId = req.user.user.id;
