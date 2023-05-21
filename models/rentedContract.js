@@ -28,6 +28,11 @@ const RentedContractSchema = new Mongoose.Schema({
     ref: "User",
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["En attent", "Louer"],
+    default: "En attent",
+  },
 });
 
 const RentedContract = Mongoose.model("RentedContract", RentedContractSchema);
