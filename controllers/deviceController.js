@@ -27,6 +27,9 @@ exports.addDevice = async (req, res, next) => {
       yearOfManufacture,
       rentalPrice,
     } = req.body;
+    if (!req.file) {
+      return res.status(500).json({ message: "You have to choose an image" });
+    }
     const image = req.file.path;
     try {
       const serial_number = await Device.findOne({ serialNumber });
@@ -104,7 +107,7 @@ exports.updateDevice = async (req, res, next) => {
       console.log(err);
       return res.status(500).json({ message: "Server error" });
     }
-    const { description, brand, type, purchacePrice, yearOfManufacture } =
+    const { description, brand, type, purchacePrice, yearOfManufacture,rentalPrice } =
       req.body;
     const deviceTest = await Device.findById(deviceId);
     const userRole = req.user.user.role;
@@ -135,6 +138,7 @@ exports.updateDevice = async (req, res, next) => {
         type,
         image: deviceTest.image,
         purchacePrice,
+        rentalPrice,
         yearOfManufacture,
       });
       res.status(200).json({ message: "devices successfully updated" });
