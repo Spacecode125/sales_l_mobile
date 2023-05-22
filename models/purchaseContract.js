@@ -19,6 +19,11 @@ const PurchaseContractSchema = new Mongoose.Schema({
     ref: "User",
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["En attent", "Acheter"],
+    default: "En attent",
+  },
 });
 
 const PurchaseContract = Mongoose.model(

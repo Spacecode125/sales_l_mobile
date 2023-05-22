@@ -20,6 +20,11 @@ const TradedContractSchema = new Mongoose.Schema({
     ref: "User",
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["En attent", "Echanger"],
+    default: "En attent",
+  },
 });
 
 const TradedContract = Mongoose.model("TradedContract", TradedContractSchema);
