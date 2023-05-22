@@ -4,6 +4,7 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     unique: true,
     required: true,
+    immutable: true,
   },
   role: {
     type: String,
