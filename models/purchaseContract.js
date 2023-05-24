@@ -21,8 +21,8 @@ const PurchaseContractSchema = new Mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["En attent", "Acheter"],
-    default: "En attent",
+    enum: ["Waiting", "Sold"],
+    default: "Waiting",
   },
 });
 

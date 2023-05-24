@@ -33,7 +33,7 @@ exports.createContract = async (req, res) => {
         signedbyPartner,
         RentedContract: rentedContractId,
       });
-      rentedContract.status = "Louer"; 
+      rentedContract.status = "Rented"; 
       await rentedContract.save();
     } else if (tradedContractId) {
       const tradedContract = await TradedContractModel.findById(
@@ -48,7 +48,7 @@ exports.createContract = async (req, res) => {
         signedbyPartner,
         TradedContract: tradedContractId,
       });
-      tradedContract.status = "Echanger";
+      tradedContract.status = "Traded";
       await tradedContract.save();
     } else if (purchaseContractId) {
       const purchaseContract = await PurchaseContractModel.findById(
@@ -63,7 +63,7 @@ exports.createContract = async (req, res) => {
         signedbyPartner,
         PurchaseContract: purchaseContractId,
       });
-      purchaseContract.status = "Acheter"; 
+      purchaseContract.status = "Sold"; 
       await purchaseContract.save();
     } else {
       return res.status(400).json({ message: "No contract ID provided" });

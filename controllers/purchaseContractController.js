@@ -29,6 +29,7 @@ exports.createPurchaseContract = async (req, res) => {
       salesman: deviceFound.user,
       client: userId,
       createdAt: new Date(),
+      type: "Purchase",
     });
     await newOffer.save();
     res.json(newPurchaseContract);

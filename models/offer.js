@@ -20,6 +20,11 @@ const OfferSchema = new Mongoose.Schema({
     type: Mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  type : {
+    type: String,
+    enum: ["Rental", "Trade", "Purchase"],
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
