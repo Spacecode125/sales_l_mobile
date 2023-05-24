@@ -25,6 +25,7 @@ const TradedContractSchema = new Mongoose.Schema({
     enum: ["Waiting", "Traded"],
     default: "Waiting",
   },
+  
 });
 
 const TradedContract = Mongoose.model("TradedContract", TradedContractSchema);
