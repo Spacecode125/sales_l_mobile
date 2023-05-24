@@ -212,6 +212,36 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+exports.updatePassword = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const userId = req.user.user.id;
+
+  try {
+    const user = await User.findById(userId);
+
+    const match = await bcrypt.compare(oldPassword, user.password);
+    if (!match) {
+      return res.status(401).json({message:"Incorrect password"});
+    }
+    const passmatch = await bcrypt.compare(newPassword, user.password);
+    if (passmatch) {
+      return res
+        .status(400)
+        .json({message:"the new password is the same as the old password"});
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({message:"Password updated successfully"});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message:"Internal Server Error"});
+  }
+};
+
 exports.findEmail = async (req, res) => {
   const { email } = req.body;
 

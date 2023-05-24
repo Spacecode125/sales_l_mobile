@@ -18,6 +18,7 @@ router.get("/findEmail", findEmail);
 router.route("/resetPass").post(resetPassword);
 router.get("/:userId", roleAuth(["admin","user","salesman"]), getUserById);
 router.put("/update", roleAuth(["admin","user","salesman"]), updateUser);
+router.put("/updatePass", roleAuth(["admin","user","salesman"]), updatePassword);
 router.delete("/:userId", roleAuth(["admin"]), deleteUser);
 
 
