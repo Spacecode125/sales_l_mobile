@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(express.json());
 
 exports.createTradedContract = async (req, res) => {
-  const  userId  = req.user.user.id;
+  const userId = req.user.user.id;
   const { tradeInOffer, tradedDevice } = req.body;
   try {
     const deviceFound = await Device.findById(tradedDevice);
@@ -16,17 +16,17 @@ exports.createTradedContract = async (req, res) => {
       tradeInOffer,
       tradedDevice,
       client: userId,
-      owner
+      owner,
     });
     await newTradedContract.save();
     const newOffer = new Offer({
-        TradedOffer: newTradedContract._id,
-        salesman:deviceFound.user,
-        client:userId,
-        createdAt: new Date(),
-        type: "Trade"
-      });
-      await newOffer.save();
+      TradedOffer: newTradedContract._id,
+      salesman: deviceFound.user,
+      client: userId,
+      createdAt: new Date(),
+      type: "Trade",
+    });
+    await newOffer.save();
     res.json(newTradedContract);
   } catch (err) {
     console.error(err.message);
@@ -36,7 +36,16 @@ exports.createTradedContract = async (req, res) => {
 
 exports.getTradedContracts = async (req, res) => {
   try {
-    const tradedContracts = await TradedContract.find();
+    const tradedContracts = await TradedContract.find().populate({
+      path: "tradedDevice",
+      populate: { path: "user" },
+    })
+    .populate({
+      path: "tradeInOffer",
+      populate: { path: "user" },
+    })
+    .populate("client")
+    .populate("owner");;
     res.json(tradedContracts);
   } catch (err) {
     console.error(err.message);
@@ -70,7 +79,17 @@ exports.getAllTradedContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const tradedContracts = await TradedContract.find(query).populate("tradedDevice").populate("tradeInOffer").populate("client").populate("owner");
+    const tradedContracts = await TradedContract.find(query)
+      .populate({
+        path: "tradedDevice",
+        populate: { path: "user" },
+      })
+      .populate({
+        path: "tradeInOffer",
+        populate: { path: "user" },
+      })
+      .populate("client")
+      .populate("owner");
     if (tradedContracts) {
       res.status(200).json(tradedContracts);
     } else {
@@ -87,7 +106,7 @@ exports.getAllTradedContractsBySalesman = async (req, res, next) => {
 };
 
 exports.deleteTradedContract = async (req, res) => {
-  const  userId  = req.user.user.id;
+  const userId = req.user.user.id;
   const tradedContractId = req.params.tradedContractId;
   try {
     const tradedContract = await TradedContract.findById(tradedContractId);
@@ -96,20 +115,16 @@ exports.deleteTradedContract = async (req, res) => {
     }
     const userRole = req.user.user.role;
     let query = {};
-  
+
     if (userRole !== "admin") {
       query = {
-        $or: [
-          { owner: userId },
-          { "user.role": "admin" }
-        ]
+        $or: [{ owner: userId }, { "user.role": "admin" }],
       };
     }
-    const TradedContractAuth = await TradedContract.find(query);
-    if (!TradedContractAuth) {
+      const TradedContractAuth = await TradedContract.deleteOne({ _id: tradedContractId, ...query });
+    if (TradedContractAuth.deletedCount === 0) {
       res.status(500).json({ message: "Not authorized to delete this trade" });
     }
-    await tradedContract.remove();
     res.json({ message: "TradedContract deleted" });
   } catch (err) {
     console.error(err.message);

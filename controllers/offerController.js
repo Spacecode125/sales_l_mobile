@@ -45,7 +45,8 @@ exports.getAllOffers = async (req, res) => {
             model: "User",
           },
         ],
-      });
+      })
+      .populate("client");
     res.json(offer);
   } catch (err) {
     console.error(err.message);
@@ -96,7 +97,6 @@ exports.getAllOffersBySalesman = async (req, res) => {
         ],
       })
       .populate("client");
-
     res.json(offer);
   } catch (err) {
     console.error(err.message);

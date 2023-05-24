@@ -26,6 +26,7 @@ app.use("/api/device", require("./routes/deviceRoutes"));
 app.use("/api/offer", require("./routes/offerRoutes"));
 app.use("/api/deviceStatus", require("./routes/deviceStatusRoutes"));
 app.use("/api/purchaseContract", require("./routes/purchaseContractRoutes"));
+app.use("/api/contact", require("./routes/contactRoutes"));
 
 
 app.get("/adminRoute", roleAuth("admin"), (req, res) => {

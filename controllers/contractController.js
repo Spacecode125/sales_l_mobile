@@ -32,6 +32,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         RentedContract: rentedContractId,
+        type:'Rental'
       });
       rentedContract.status = "Rented"; 
       await rentedContract.save();
@@ -47,6 +48,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         TradedContract: tradedContractId,
+        type:'Trade'
       });
       tradedContract.status = "Traded";
       await tradedContract.save();
@@ -62,6 +64,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         PurchaseContract: purchaseContractId,
+        type:'Purchase'
       });
       purchaseContract.status = "Sold"; 
       await purchaseContract.save();
@@ -184,13 +187,11 @@ exports.getAllContractsBySalesman = async (req, res, next) => {
 exports.deleteContract = async (req, res) => {
   const reference = req.params.reference;
   try {
-    const contract = await Contract.findOne({ reference });
+    const contract = await Contract.findOneAndDelete({ reference });
     if (!contract) {
-      return res
-        .status(404)
-        .json({ message: "Contract not found with this reference" });
+      return res.status(404).json({ message: "Contract not found with this reference" });
     }
-    await contract.remove();
+
     res.json({ message: "Contract deleted" });
   } catch (err) {
     console.error(err.message);

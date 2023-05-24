@@ -211,3 +211,46 @@ exports.deleteUser = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+exports.findEmail = async (req, res) => {
+  const { email } = req.body;
+
+  // Look up the user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({message:'User not found'});
+  }
+
+  res.json({ userId: user._id });
+}
+
+exports.resetPassword = async (req, res) => {
+  const { userId, newPassword } = req.body;
+try{
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(400).json({message:'User not found'});
+  }
+
+
+  const passwordMatch = await bcrypt.compare(newPassword, user.password);
+  if (passwordMatch) {
+    return res.status(400).json({message:'New password cannot be the same as the current password'});
+  }
+
+
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(newPassword, salt);
+
+
+  user.password = passwordHash;
+  await user.save();
+
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+  res.json({ token,user });}
+  catch(err){
+    console.log(err)
+  }
+}
