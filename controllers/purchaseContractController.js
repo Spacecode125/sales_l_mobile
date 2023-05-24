@@ -41,7 +41,12 @@ exports.createPurchaseContract = async (req, res) => {
 
 exports.getPurchaseContracts = async (req, res) => {
   try {
-    const purchaseContracts = await PurchaseContract.find();
+    const purchaseContracts = await PurchaseContract.find().populate({
+      path: "device",
+      populate: { path: "user" },
+    })
+      .populate("client")
+      .populate("owner");;
     res.json(purchaseContracts);
   } catch (err) {
     console.error(err.message);
@@ -61,7 +66,13 @@ exports.getAllPurchaseContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const purchaseContracts = await PurchaseContract.find(query).populate("device").populate("client").populate("owner");
+    const purchaseContracts = await PurchaseContract.find(query)
+    .populate({
+      path: "device",
+      populate: { path: "user" },
+    })
+      .populate("client")
+      .populate("owner");
     if (purchaseContracts) {
       res.status(200).json(purchaseContracts);
     } else {

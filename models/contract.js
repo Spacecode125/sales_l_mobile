@@ -25,6 +25,15 @@ const ContractSchema = new Mongoose.Schema({
     type: Mongoose.Schema.Types.ObjectId,
     ref: "PurchaseContract",
   },
+  type : {
+    type: String,
+    enum: ["Rental", "Trade", "Purchase"],
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Contract = Mongoose.model("Contract", ContractSchema);

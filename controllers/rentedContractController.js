@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(express.json());
 
 exports.createRentedContract = async (req, res) => {
-  const  userId  = req.user.user.id;
+  const userId = req.user.user.id;
   const { validFrom, validTo } = req.body;
   const { deviceId } = req.params;
   try {
@@ -27,17 +27,17 @@ exports.createRentedContract = async (req, res) => {
       validFrom,
       validTo,
       total: totalPrice,
-      device:deviceId,
+      device: deviceId,
       client: userId,
-      owner
+      owner,
     });
     await newRentedContract.save();
     const newOffer = new Offer({
       RentedOffer: newRentedContract._id,
-      salesman:deviceFound.user,
-      client:userId,
+      salesman: deviceFound.user,
+      client: userId,
       createdAt: new Date(),
-      type: "Rental"
+      type: "Rental",
     });
     await newOffer.save();
     res.json(newRentedContract);
@@ -49,7 +49,12 @@ exports.createRentedContract = async (req, res) => {
 
 exports.getRentedContracts = async (req, res) => {
   try {
-    const rentedContracts = await RentedContract.find();
+    const rentedContracts = await RentedContract.find().populate({
+      path: "device",
+      populate: { path: "user" },
+    })
+    .populate("client")
+    .populate("owner");;
     res.json(rentedContracts);
   } catch (err) {
     console.error(err.message);
@@ -83,7 +88,13 @@ exports.getAllRentedContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const rentedContracts = await RentedContract.find(query).populate("device").populate("client").populate("owner");
+    const rentedContracts = await RentedContract.find(query)
+      .populate({
+        path: "device",
+        populate: { path: "user" },
+      })
+      .populate("client")
+      .populate("owner");
     if (rentedContracts) {
       res.status(200).json(rentedContracts);
     } else {
@@ -100,7 +111,7 @@ exports.getAllRentedContractsBySalesman = async (req, res, next) => {
 };
 
 exports.deleteRentedContract = async (req, res) => {
-  const  userId  = req.user.user.id;
+  const userId = req.user.user.id;
   const rentedContractId = req.params.rentedContractId;
   try {
     const rentedContract = await RentedContract.findById(rentedContractId);
@@ -109,13 +120,10 @@ exports.deleteRentedContract = async (req, res) => {
     }
     const userRole = req.user.user.role;
     let query = {};
-  
+
     if (userRole !== "admin") {
       query = {
-        $or: [
-          { owner: userId },
-          { "user.role": "admin" }
-        ]
+        $or: [{ owner: userId }, { "user.role": "admin" }],
       };
     }
     const RentedContractAuth = await RentedContract.find(query);

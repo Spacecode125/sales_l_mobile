@@ -32,6 +32,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         RentedContract: rentedContractId,
+        type:'Rental'
       });
       rentedContract.status = "Rented"; 
       await rentedContract.save();
@@ -47,6 +48,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         TradedContract: tradedContractId,
+        type:'Trade'
       });
       tradedContract.status = "Traded";
       await tradedContract.save();
@@ -62,6 +64,7 @@ exports.createContract = async (req, res) => {
         signedbyOwner:userId,
         signedbyPartner,
         PurchaseContract: purchaseContractId,
+        type:'Purchase'
       });
       purchaseContract.status = "Sold"; 
       await purchaseContract.save();
