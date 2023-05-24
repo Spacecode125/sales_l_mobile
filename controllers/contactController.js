@@ -6,18 +6,19 @@ app.use(express.json());
 const transporter = require("../middleware/email");
 
 exports.createContact = async (req, res) => {
-  const { name, email, message } = req.body;
+  const { name, email, message,subject } = req.body;
   try {
     const newContact = new Contact({
       name,
       email,
+      subject,
       message,
     });
     await newContact.save();
     const mailOptions = {
       from: email, // Replace with your Gmail address
       to: "khaledbouajila5481@gmail.com", // Replace with the recipient's email address
-      subject: "New Contact",
+      subject: subject,
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     };
     await transporter.sendMail(mailOptions);

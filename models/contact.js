@@ -12,6 +12,10 @@ const ContactSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
+  subject : {
+    type: String,
+    required: true,
+  },
 });
 const Contact = Mongoose.model("Contact", ContactSchema);
 module.exports = Contact;
