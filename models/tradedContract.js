@@ -25,6 +25,7 @@ const TradedContractSchema = new Mongoose.Schema({
     enum: ["En attent", "Echanger"],
     default: "En attent",
   },
+  
 });
 
 const TradedContract = Mongoose.model("TradedContract", TradedContractSchema);
