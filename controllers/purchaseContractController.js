@@ -122,11 +122,10 @@ exports.cancelPurchaseContract = async (req, res) => {
         $or: [{ user: userId }, { "user.role": "admin" }],
       };
     }
-    const PurchaseContractAuth = await PurchaseContract.find(query);
-    if (!PurchaseContractAuth) {
+      const PurchaseContractAuth = await PurchaseContract.deleteOne({ _id: purchaseContractId, ...query });
+      if (PurchaseContractAuth.deletedCount === 0) {
       res.status(500).json({ message: "Not authorized to delete this rent" });
     }
-    await purchaseContract.remove();
     res.json({ message: "Purchase contract deleted" });
   } catch (err) {
     console.error(err.message);

@@ -121,11 +121,10 @@ exports.deleteTradedContract = async (req, res) => {
         $or: [{ owner: userId }, { "user.role": "admin" }],
       };
     }
-    const TradedContractAuth = await TradedContract.find(query);
-    if (!TradedContractAuth) {
+      const TradedContractAuth = await TradedContract.deleteOne({ _id: tradedContractId, ...query });
+    if (TradedContractAuth.deletedCount === 0) {
       res.status(500).json({ message: "Not authorized to delete this trade" });
     }
-    await tradedContract.remove();
     res.json({ message: "TradedContract deleted" });
   } catch (err) {
     console.error(err.message);

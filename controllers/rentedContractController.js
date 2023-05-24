@@ -126,11 +126,10 @@ exports.deleteRentedContract = async (req, res) => {
         $or: [{ owner: userId }, { "user.role": "admin" }],
       };
     }
-    const RentedContractAuth = await RentedContract.find(query);
-    if (!RentedContractAuth) {
+    const rentedContractAuth = await RentedContract.deleteOne({ _id: rentedContractId, ...query });
+    if (rentedContractAuth.deletedCount === 0) {
       res.status(500).json({ message: "Not authorized to delete this rent" });
     }
-    await rentedContract.remove();
     res.json({ message: "RentedContract deleted" });
   } catch (err) {
     console.error(err.message);
