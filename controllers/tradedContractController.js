@@ -22,7 +22,8 @@ exports.createTradedContract = async (req, res) => {
     const newOffer = new Offer({
         TradedOffer: newTradedContract._id,
         salesman:deviceFound.user,
-        client:userId
+        client:userId,
+        createdAt: new Date(),
       });
       await newOffer.save();
     res.json(newTradedContract);

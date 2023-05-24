@@ -20,6 +20,10 @@ const OfferSchema = new Mongoose.Schema({
     type: Mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Offer = Mongoose.model("Offer", OfferSchema);
