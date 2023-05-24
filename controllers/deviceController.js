@@ -72,7 +72,7 @@ exports.getDeviceById = async (req, res, next) => {
 
 exports.getAllDevices = async (req, res, next) => {
   try {
-    const devices = await Device.find();
+    const devices = await Device.find().populate('user');
     res.status(200).json(devices);
   } catch (error) {
     res.status(400).json({
@@ -85,7 +85,7 @@ exports.getAllDevices = async (req, res, next) => {
 exports.getAllRentedDevicesBySalesman = async (req, res, next) => {
   const userId = req.user.user.id;
   try {
-    const devices = await Device.find({ user: userId });
+    const devices = await Device.find({ user: userId }).populate('user');
     if (devices) {
       res.status(200).json(devices);
     } else {
