@@ -30,8 +30,8 @@ const RentedContractSchema = new Mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["En attent", "Louer"],
-    default: "En attent",
+    enum: ["Waiting", "Rented"],
+    default: "Waiting",
   },
 });
 

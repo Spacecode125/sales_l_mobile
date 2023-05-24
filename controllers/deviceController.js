@@ -27,6 +27,9 @@ exports.addDevice = async (req, res, next) => {
       yearOfManufacture,
       rentalPrice,
     } = req.body;
+    if (!req.file) {
+      return res.status(500).json({ message: "You have to choose an image" });
+    }
     const image = req.file.path;
     try {
       const serial_number = await Device.findOne({ serialNumber });
@@ -69,7 +72,7 @@ exports.getDeviceById = async (req, res, next) => {
 
 exports.getAllDevices = async (req, res, next) => {
   try {
-    const devices = await Device.find();
+    const devices = await Device.find().populate('user');
     res.status(200).json(devices);
   } catch (error) {
     res.status(400).json({
@@ -82,7 +85,7 @@ exports.getAllDevices = async (req, res, next) => {
 exports.getAllRentedDevicesBySalesman = async (req, res, next) => {
   const userId = req.user.user.id;
   try {
-    const devices = await Device.find({ user: userId });
+    const devices = await Device.find({ user: userId }).populate('user');
     if (devices) {
       res.status(200).json(devices);
     } else {
@@ -104,7 +107,7 @@ exports.updateDevice = async (req, res, next) => {
       console.log(err);
       return res.status(500).json({ message: "Server error" });
     }
-    const { description, brand, type, purchacePrice, yearOfManufacture } =
+    const { description, brand, type, purchacePrice, yearOfManufacture,rentalPrice } =
       req.body;
     const deviceTest = await Device.findById(deviceId);
     const userRole = req.user.user.role;
@@ -135,6 +138,7 @@ exports.updateDevice = async (req, res, next) => {
         type,
         image: deviceTest.image,
         purchacePrice,
+        rentalPrice,
         yearOfManufacture,
       });
       res.status(200).json({ message: "devices successfully updated" });

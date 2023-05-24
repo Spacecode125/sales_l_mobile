@@ -22,7 +22,9 @@ exports.createTradedContract = async (req, res) => {
     const newOffer = new Offer({
         TradedOffer: newTradedContract._id,
         salesman:deviceFound.user,
-        client:userId
+        client:userId,
+        createdAt: new Date(),
+        type: "Trade"
       });
       await newOffer.save();
     res.json(newTradedContract);
@@ -68,7 +70,7 @@ exports.getAllTradedContractsBySalesman = async (req, res, next) => {
       };
     }
 
-    const tradedContracts = await TradedContract.find(query).populate("device").populate("client").populate("owner");
+    const tradedContracts = await TradedContract.find(query).populate("tradedDevice").populate("tradeInOffer").populate("client").populate("owner");
     if (tradedContracts) {
       res.status(200).json(tradedContracts);
     } else {

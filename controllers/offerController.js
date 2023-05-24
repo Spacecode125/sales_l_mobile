@@ -55,50 +55,51 @@ exports.getAllOffers = async (req, res) => {
 
 exports.getAllOffersBySalesman = async (req, res) => {
   const userId = req.user.user.id;
-console.log(userId)
+  console.log(userId);
   try {
     const offer = await Offer.find({ salesman: userId })
-    .populate({
-      path: "RentedOffer",
-      populate: {
-        path: "device",
-        model: "Device",
-      },
-    })
-    .populate({
-      path: "TradedOffer",
-      populate: [
-        {
-          path: "tradeInOffer",
-          model: "Device",
-        },
-        {
-          path: "tradedDevice",
-          model: "Device",
-        },
-      ],
-    })
-    .populate({
-      path: "PurchaseOffer",
-      populate: [
-        {
+      .populate({
+        path: "RentedOffer",
+        populate: {
           path: "device",
           model: "Device",
         },
-        {
-          path: "owner",
-          model: "User",
-        },
-        {
-          path: "client",
-          model: "User",
-        },
-      ],
-    });
+      })
+      .populate({
+        path: "TradedOffer",
+        populate: [
+          {
+            path: "tradeInOffer",
+            model: "Device",
+          },
+          {
+            path: "tradedDevice",
+            model: "Device",
+          },
+        ],
+      })
+      .populate({
+        path: "PurchaseOffer",
+        populate: [
+          {
+            path: "device",
+            model: "Device",
+          },
+          {
+            path: "owner",
+            model: "User",
+          },
+          {
+            path: "client",
+            model: "User",
+          },
+        ],
+      })
+      .populate("client");
+
     res.json(offer);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server Error" });
-
   }
 };

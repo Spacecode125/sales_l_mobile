@@ -36,7 +36,9 @@ exports.createRentedContract = async (req, res) => {
     const newOffer = new Offer({
       RentedOffer: newRentedContract._id,
       salesman:deviceFound.user,
-      client:userId
+      client:userId,
+      createdAt: new Date(),
+      type: "Rental"
     });
     await newOffer.save();
     res.json(newRentedContract);

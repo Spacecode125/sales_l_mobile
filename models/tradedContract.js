@@ -22,8 +22,8 @@ const TradedContractSchema = new Mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["En attent", "Echanger"],
-    default: "En attent",
+    enum: ["Waiting", "Traded"],
+    default: "Waiting",
   },
   
 });
