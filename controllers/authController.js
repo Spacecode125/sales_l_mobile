@@ -170,6 +170,7 @@ exports.updateUser = async (req, res) => {
         if (user.image !== "uploads\\info.png") {
           fs.unlinkSync(user.image);
         }
+
         user.image = req.file.path;
       }
 

@@ -8,8 +8,8 @@ app.use(express.json());
 
 exports.createRentedContract = async (req, res) => {
   const  userId  = req.user.user.id;
-  const { validFrom, validTo } = req.body;
-  const { deviceId } = req.params;
+  const { validFrom, validTo } = req.body; //body Request 
+  const { deviceId } = req.params; 
   try {
     const deviceFound = await Device.findById(deviceId);
     if (!deviceFound) {
@@ -21,6 +21,7 @@ exports.createRentedContract = async (req, res) => {
     const rentalDays = Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
     console.log(rentalDays);
     const owner = deviceFound.user;
+    
     // Calculate the total price based on the rental days
     const totalPrice = rentalDays * deviceFound.rentalPrice;
     const newRentedContract = new RentedContract({
