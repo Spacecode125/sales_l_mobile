@@ -156,12 +156,9 @@ exports.acceptPurchaseContract = async (req, res) => {
       res.status(500).json({ message: "Not authorized to delete this rent" });
     }
     if (purchaseContract.device) {
-      const device = await Device.findById(purchaseContract.device);
-      if (device) {
-        await device.remove();
-      }
+      await Device.deleteOne({ _id: purchaseContract.device });
     }
-    await purchaseContract.remove();
+    await PurchaseContract.deleteOne({ _id: purchaseContractId });
     res.json({ message: "Purchase contract deleted" });
   } catch (err) {
     console.error(err.message);
