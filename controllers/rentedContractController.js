@@ -2,6 +2,7 @@ const RentedContract = require("../models/rentedContract");
 const Device = require("../models/device");
 const Offer = require("../models/offer");
 const express = require("express");
+const { populate } = require("../models/deviceStatus");
 const app = express();
 require("dotenv").config();
 app.use(express.json());
@@ -55,7 +56,8 @@ exports.getRentedContracts = async (req, res) => {
       populate: { path: "user" },
     })
     .populate("client")
-    .populate("owner");;
+    .populate("owner")
+    .populate("devicesStatus");
     res.json(rentedContracts);
   } catch (err) {
     console.error(err.message);
