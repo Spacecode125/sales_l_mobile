@@ -97,7 +97,8 @@ exports.getAllRentedContractsBySalesman = async (req, res, next) => {
         populate: { path: "user" },
       })
       .populate("client")
-      .populate("owner");
+      .populate("owner")
+      .populate("devicesStatus");
     if (rentedContracts) {
       res.status(200).json(rentedContracts);
     } else {
