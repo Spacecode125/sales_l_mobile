@@ -16,6 +16,10 @@ const ContactSchema = new Mongoose.Schema({
     type: String,
     required: true,
   },
+  sentAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 const Contact = Mongoose.model("Contact", ContactSchema);
 module.exports = Contact;
