@@ -41,6 +41,8 @@ exports.addDeviceStatus = async (req, res, next) => {
         user: userId,
         RentedContract: RentedContractId,
       });
+      RentFound.devicesStatus.push(deviceStatus);
+      await RentFound.save();
       res.status(201).json(deviceStatus);
     } catch (error) {
       res.status(400).json({

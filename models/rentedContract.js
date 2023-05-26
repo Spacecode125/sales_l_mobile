@@ -33,6 +33,10 @@ const RentedContractSchema = new Mongoose.Schema({
     enum: ["Waiting", "Rented"],
     default: "Waiting",
   },
+  devicesStatus: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "DeviceStatus",
+  },
 });
 
 const RentedContract = Mongoose.model("RentedContract", RentedContractSchema);
