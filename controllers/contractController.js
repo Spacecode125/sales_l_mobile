@@ -146,29 +146,35 @@ exports.getAllContractsBySalesman = async (req, res, next) => {
     }
 
     const contracts = await Contract.find(query)
-      .populate("signedbyOwner")
-      .populate("signedbyPartner")
-      .populate({
-        path: "RentedContract",
-        populate: {
-          path: "device",
+    .populate({
+      path: "RentedContract",
+      populate: {
+        path: "device",
+        model: "Device",
+      },
+    })
+    .populate({
+      path: "TradedContract",
+      populate: [
+        {
+          path: "tradeInOffer",
           model: "Device",
         },
-      })
-      .populate({
-        path: "TradedContract",
-        populate: {
+        {
           path: "tradedDevice",
           model: "Device",
         },
-      })
-      .populate({
-        path: "PurchaseContract",
-        populate: {
-          path: "device",
-          model: "Device",
-        },
-      });
+      ],
+    })
+    .populate({
+      path: "PurchaseContract",
+      populate: {
+        path: "device",
+        model: "Device",
+      },
+    })
+    .populate("signedbyOwner")
+    .populate("signedbyPartner");
     if (contracts) {
       res.status(200).json(contracts);
     } else {
